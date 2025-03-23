@@ -23,6 +23,10 @@ func GetKeyAES(keyHex string) ([]byte, error) {
 }
 
 func EncryptGCM(plaintext []byte, key []byte) (nonce, ciphertext []byte, err error) {
+	if len(key) != 32 {
+		panic("key must be 32 bytes for AES-256-GCM")
+	}
+
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, nil, err
@@ -42,6 +46,10 @@ func EncryptGCM(plaintext []byte, key []byte) (nonce, ciphertext []byte, err err
 }
 
 func DecryptGCM(nonce, ciphertext, key []byte) (plaintext []byte, err error) {
+	if len(key) != 32 {
+		panic("key must be 32 bytes for AES-256-GCM")
+	}
+
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err

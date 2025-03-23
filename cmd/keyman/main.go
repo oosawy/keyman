@@ -35,4 +35,11 @@ func main() {
 	fmt.Printf("Sealed     : %s\n", hex.EncodeToString(sealed))
 	fmt.Printf("Public     : %s\n", hex.EncodeToString(pub))
 	fmt.Printf("Fingerprint: %s\n", hex.EncodeToString(fp))
+
+	priv, err = seal.UnsealPrivateKey(sealed, mkey)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("PublicKey  : %s\n", hex.EncodeToString(priv))
 }

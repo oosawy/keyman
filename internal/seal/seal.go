@@ -9,36 +9,51 @@ import (
 
 var sealHeader = []byte{'k', 'm'}
 
-func SealPrivateKey(priv, mkey []byte) ([]byte, error) {
+func SealPrivateKey(priv, mkey []byte) (sealed []byte, err error) {
 	nonce, encrypted, err := cipherkit.EncryptGCM(priv, mkey)
 	if err != nil {
-		return nil, err
+		return
 	}
 
+	sealed = marshal(nonce, encrypted)
+	return
+}
+
+func UnsealPrivateKey(sealed, mkey []byte) (priv []byte, err error) {
+	nonce, encrypted, err := unmarshal(sealed)
+	if err != nil {
+		return
+	}
+
+	priv, err = cipherkit.DecryptGCM(nonce, encrypted, mkey)
+	return
+}
+
+func marshal(nonce []byte, encrypted []byte) []byte {
 	buf := make([]byte, 0, len(sealHeader)+len(nonce)+len(encrypted))
 	buf = append(buf, sealHeader...)
 	buf = append(buf, nonce...)
 	buf = append(buf, encrypted...)
-	return buf, nil
+	return buf
 }
 
-func UnsealPrivateKey(data []byte) (nonce, sealed []byte, err error) {
+func unmarshal(sealed []byte) (nonce, encrypted []byte, err error) {
 	hlen := len(sealHeader)
 
-	if len(data) < hlen {
-		err = errors.New("data too short")
+	if len(sealed) < hlen {
+		err = errors.New("unmarshal: too short")
 		return
 	}
-	if !bytes.Equal(data[:hlen], sealHeader) {
-		err = errors.New("invalid header")
+	if !bytes.Equal(sealed[:hlen], sealHeader) {
+		err = errors.New("unmarshal: invalid header")
 		return
 	}
-	if len(data) < hlen+cipherkit.GCMNonceSize {
-		err = errors.New("data too short for nonce")
+	if len(sealed) < hlen+cipherkit.GCMNonceSize {
+		err = errors.New("unmarshal: too short for nonce")
 		return
 	}
 
-	nonce = data[hlen : hlen+cipherkit.GCMNonceSize]
-	sealed = data[hlen+cipherkit.GCMNonceSize:]
+	nonce = sealed[hlen : hlen+cipherkit.GCMNonceSize]
+	encrypted = sealed[hlen+cipherkit.GCMNonceSize:]
 	return
 }
