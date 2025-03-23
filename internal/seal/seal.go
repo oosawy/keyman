@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/oosawy/keyman/internal/crypto"
+	"github.com/oosawy/keyman/internal/cipherkit"
 )
 
 var sealHeader = []byte{'k', 'm'}
 
 func SealPrivateKey(priv, mkey []byte) ([]byte, error) {
-	nonce, encrypted, err := crypto.EncryptGCM(priv, mkey)
+	nonce, encrypted, err := cipherkit.EncryptGCM(priv, mkey)
 	if err != nil {
 		return nil, err
 	}
@@ -33,12 +33,12 @@ func UnsealPrivateKey(data []byte) (nonce, sealed []byte, err error) {
 		err = errors.New("invalid header")
 		return
 	}
-	if len(data) < hlen+crypto.GCMNonceSize {
+	if len(data) < hlen+cipherkit.GCMNonceSize {
 		err = errors.New("data too short for nonce")
 		return
 	}
 
-	nonce = data[hlen : hlen+crypto.GCMNonceSize]
-	sealed = data[hlen+crypto.GCMNonceSize:]
+	nonce = data[hlen : hlen+cipherkit.GCMNonceSize]
+	sealed = data[hlen+cipherkit.GCMNonceSize:]
 	return
 }

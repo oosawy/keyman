@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/oosawy/keyman/internal/crypto"
+	"github.com/oosawy/keyman/internal/cipherkit"
 	"github.com/oosawy/keyman/internal/keygen"
 	"github.com/oosawy/keyman/internal/seal"
 )
 
 func main() {
 	keyHex := os.Getenv("AES_KEY_HEX")
-	mkey, err := crypto.GetKeyAES(keyHex)
+	mkey, err := cipherkit.GetKeyAES(keyHex)
 	if err != nil {
 		panic(err)
 	}
