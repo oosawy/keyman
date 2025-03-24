@@ -12,7 +12,7 @@ var sealHeader = []byte{'k', 'm'}
 func SealPrivateKey(priv, mkey []byte) (sealed []byte, err error) {
 	nonce, encrypted, err := cipherkit.EncryptGCM(priv, mkey)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	sealed = marshal(nonce, encrypted)
@@ -22,7 +22,7 @@ func SealPrivateKey(priv, mkey []byte) (sealed []byte, err error) {
 func UnsealPrivateKey(sealed, mkey []byte) (priv []byte, err error) {
 	nonce, encrypted, err := unmarshal(sealed)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	priv, err = cipherkit.DecryptGCM(nonce, encrypted, mkey)
