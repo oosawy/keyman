@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/oosawy/keyman/internal/cipherkit"
-	"github.com/oosawy/keyman/internal/keygen"
+	"github.com/oosawy/keyman/internal/keypair"
 	"github.com/oosawy/keyman/internal/seal"
 )
 
@@ -17,12 +17,12 @@ func main() {
 		panic(err)
 	}
 
-	key, err := keygen.GenP256KeyPair()
+	key, err := keypair.GenP256KeyPair()
 	if err != nil {
 		panic(err)
 	}
 
-	priv, pub, fp, err := keygen.EncodeP256KeyPair(key)
+	priv, pub, fp, err := keypair.EncodeP256KeyPair(key)
 	if err != nil {
 		panic(err)
 	}
