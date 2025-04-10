@@ -1,13 +1,10 @@
 package seal
 
 import (
-	"bytes"
 	"errors"
 
 	"github.com/oosawy/keyman/internal/cipherkit"
 )
-
-var sealHeader = []byte{'k', 'm'}
 
 func SealPrivateKey(priv, mkey []byte) (sealed []byte, err error) {
 	nonce, encrypted, err := cipherkit.EncryptGCM(priv, mkey)
@@ -30,30 +27,19 @@ func UnsealPrivateKey(sealed, mkey []byte) (priv []byte, err error) {
 }
 
 func marshal(nonce []byte, encrypted []byte) []byte {
-	buf := make([]byte, 0, len(sealHeader)+len(nonce)+len(encrypted))
-	buf = append(buf, sealHeader...)
+	buf := make([]byte, 0, len(nonce)+len(encrypted))
 	buf = append(buf, nonce...)
 	buf = append(buf, encrypted...)
 	return buf
 }
 
 func unmarshal(sealed []byte) (nonce, encrypted []byte, err error) {
-	hlen := len(sealHeader)
-
-	if len(sealed) < hlen {
-		err = errors.New("unmarshal: too short")
-		return
-	}
-	if !bytes.Equal(sealed[:hlen], sealHeader) {
-		err = errors.New("unmarshal: invalid header")
-		return
-	}
-	if len(sealed) < hlen+cipherkit.GCMNonceSize {
+	if len(sealed) < cipherkit.GCMNonceSize {
 		err = errors.New("unmarshal: too short for nonce")
 		return
 	}
 
-	nonce = sealed[hlen : hlen+cipherkit.GCMNonceSize]
-	encrypted = sealed[hlen+cipherkit.GCMNonceSize:]
+	nonce = sealed[:cipherkit.GCMNonceSize]
+	encrypted = sealed[cipherkit.GCMNonceSize:]
 	return
 }

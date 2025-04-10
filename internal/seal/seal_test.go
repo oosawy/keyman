@@ -16,10 +16,6 @@ func TestSealAndUnsealPrivateKey(t *testing.T) {
 		t.Fatalf("SealPrivateKey failed: %v", err)
 	}
 
-	if !bytes.Equal(sealed[:2], []byte("km")) {
-		t.Fatalf("expected header to be \"km\", got %q", sealed[:2])
-	}
-
 	unsealed, err := seal.UnsealPrivateKey(sealed, mkey)
 	if err != nil {
 		t.Fatalf("UnsealPrivateKey failed: %v", err)
