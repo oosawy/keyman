@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/oosawy/keyman/internal/cipherkit"
+	"github.com/oosawy/keyman/internal/keypair"
 	"github.com/oosawy/keyman/internal/seal"
 )
 
 func TestSealAndUnsealPrivateKey(t *testing.T) {
-	priv := []byte("my-secret-private-key")
-	mkey := []byte("0123456789abcdef0123456789abcdef")
+	priv := keypair.EncodedPrivateKey("my-secret-private-key")
+	mkey := cipherkit.MasterKey("0123456789abcdef0123456789abcdef")
 
 	sealed, err := seal.SealPrivateKey(priv, mkey)
 	if err != nil {

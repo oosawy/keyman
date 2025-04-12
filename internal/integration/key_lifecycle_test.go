@@ -21,12 +21,12 @@ func TestSealAndUnsealKeyPair(t *testing.T) {
 		t.Fatalf("GenP256KeyPair failed: %v", err)
 	}
 
-	priv, pub, fp, err := keypair.EncodeP256KeyPair(key)
+	encoded, err := keypair.EncodeP256KeyPair(key)
 	if err != nil {
 		t.Fatalf("EncodeP256KeyPair failed: %v", err)
 	}
 
-	sealed, err := seal.SealPrivateKey(priv, mkey)
+	sealed, err := seal.SealPrivateKey(encoded.PrivateKey, mkey)
 	if err != nil {
 		t.Fatalf("SealPrivateKey failed: %v", err)
 	}
@@ -36,10 +36,10 @@ func TestSealAndUnsealKeyPair(t *testing.T) {
 		t.Fatalf("UnsealPrivateKey failed: %v", err)
 	}
 
-	if hex.EncodeToString(priv) != hex.EncodeToString(unsealed) {
+	if hex.EncodeToString(encoded.PrivateKey) != hex.EncodeToString(unsealed) {
 		t.Errorf("Unsealed private key does not match original")
 	}
 
-	t.Logf("Public     : %s", hex.EncodeToString(pub))
-	t.Logf("Fingerprint: %s", hex.EncodeToString(fp))
+	t.Logf("Public     : %s", hex.EncodeToString(encoded.PublicKey))
+	t.Logf("Fingerprint: %s", hex.EncodeToString(encoded.Fingerprint))
 }

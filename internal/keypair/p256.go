@@ -18,25 +18,29 @@ func GenP256KeyPair() (*ecdsa.PrivateKey, error) {
 	return priv, nil
 }
 
-func EncodeP256KeyPair(key *ecdsa.PrivateKey) (priv, pub, fp []byte, err error) {
-	priv, err = x509.MarshalPKCS8PrivateKey(key)
+func EncodeP256KeyPair(key *ecdsa.PrivateKey) (*EncodedKeyPair, error) {
+	priv, err := x509.MarshalPKCS8PrivateKey(key)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	pub, err = x509.MarshalPKIXPublicKey(&key.PublicKey)
+	pub, err := x509.MarshalPKIXPublicKey(&key.PublicKey)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	h := sha256.New()
-	h.Write(pub)
-	fp = h.Sum(nil)
+	fp := Fingerprint(pub)
 
-	return
+	encoded := &EncodedKeyPair{
+		PrivateKey:  priv,
+		PublicKey:   pub,
+		Fingerprint: fp,
+	}
+
+	return encoded, nil
 }
 
-func DecodeP256PrivateKey(der []byte) (*ecdsa.PrivateKey, error) {
+func DecodeP256PrivateKey(der EncodedPrivateKey) (*ecdsa.PrivateKey, error) {
 	parsed, err := x509.ParsePKCS8PrivateKey(der)
 	if err != nil {
 		return nil, err
@@ -50,7 +54,7 @@ func DecodeP256PrivateKey(der []byte) (*ecdsa.PrivateKey, error) {
 	return key, nil
 }
 
-func DecodeP256PublicKey(der []byte) (*ecdsa.PublicKey, error) {
+func DecodeP256PublicKey(der EncodedPublicKey) (*ecdsa.PublicKey, error) {
 	pub, err := x509.ParsePKIXPublicKey(der)
 	if err != nil {
 		return nil, err
@@ -64,19 +68,19 @@ func DecodeP256PublicKey(der []byte) (*ecdsa.PublicKey, error) {
 	return key, nil
 }
 
-func Fingerprint(der []byte) []byte {
+func Fingerprint(der EncodedPublicKey) EncodedFingerprint {
 	h := sha256.New()
 	h.Write(der)
 	fp := h.Sum(nil)
 	return fp
 }
 
-func Sign(priv *ecdsa.PrivateKey, message []byte) ([]byte, error) {
+func Sign(priv *ecdsa.PrivateKey, message messageBytes) (signatureBytes, error) {
 	hash := sha256.Sum256(message)
 	return ecdsa.SignASN1(rand.Reader, priv, hash[:])
 }
 
-func Verify(pub *ecdsa.PublicKey, message, sig []byte) bool {
+func Verify(pub *ecdsa.PublicKey, message messageBytes, sig signatureBytes) bool {
 	hash := sha256.Sum256(message)
 	return ecdsa.VerifyASN1(pub, hash[:], sig)
 }

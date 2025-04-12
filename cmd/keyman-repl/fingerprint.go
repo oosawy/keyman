@@ -41,13 +41,13 @@ func runFingerprint(args []string) {
 			return
 		}
 
-		_, _, fp, err := keypair.EncodeP256KeyPair(priv)
+		encoded, err := keypair.EncodeP256KeyPair(priv)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "key encoding failed: %v\n", err)
 			return
 		}
 
-		fmt.Printf("fingerprint: %x\n", fp)
+		fmt.Printf("fingerprint: %x\n", encoded.Fingerprint)
 		return
 	}
 

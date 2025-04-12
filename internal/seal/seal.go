@@ -4,42 +4,48 @@ import (
 	"errors"
 
 	"github.com/oosawy/keyman/internal/cipherkit"
+	"github.com/oosawy/keyman/internal/keypair"
 )
 
-func SealPrivateKey(priv, mkey []byte) (sealed []byte, err error) {
-	nonce, encrypted, err := cipherkit.EncryptGCM(priv, mkey)
+func SealPrivateKey(priv keypair.EncodedPrivateKey, mkey cipherkit.MasterKey) (SealedPrivateKey, error) {
+	nonce, encrypted, err := cipherkit.EncryptGCM(cipherkit.Plaintext(priv), mkey)
 	if err != nil {
 		return nil, err
 	}
 
-	sealed = marshal(nonce, encrypted)
-	return
+	sealed := marshal(nonce, encrypted)
+	return sealed, nil
 }
 
-func UnsealPrivateKey(sealed, mkey []byte) (priv []byte, err error) {
+func UnsealPrivateKey(sealed SealedPrivateKey, mkey cipherkit.MasterKey) (keypair.EncodedPrivateKey, error) {
 	nonce, encrypted, err := unmarshal(sealed)
 	if err != nil {
 		return nil, err
 	}
 
-	priv, err = cipherkit.DecryptGCM(nonce, encrypted, mkey)
-	return
+	plain, err := cipherkit.DecryptGCM(nonce, encrypted, mkey)
+	if err != nil {
+		return nil, err
+	}
+
+	priv := keypair.EncodedPrivateKey(plain)
+	return priv, nil
 }
 
-func marshal(nonce []byte, encrypted []byte) []byte {
+func marshal(nonce cipherkit.Nonce, encrypted cipherkit.Ciphertext) SealedPrivateKey {
 	buf := make([]byte, 0, len(nonce)+len(encrypted))
 	buf = append(buf, nonce...)
 	buf = append(buf, encrypted...)
 	return buf
 }
 
-func unmarshal(sealed []byte) (nonce, encrypted []byte, err error) {
+func unmarshal(sealed SealedPrivateKey) (cipherkit.Nonce, cipherkit.Ciphertext, error) {
 	if len(sealed) < cipherkit.GCMNonceSize {
-		err = errors.New("unmarshal: too short for nonce")
-		return
+		err := errors.New("unmarshal: too short for nonce")
+		return nil, nil, err
 	}
 
-	nonce = sealed[:cipherkit.GCMNonceSize]
-	encrypted = sealed[cipherkit.GCMNonceSize:]
-	return
+	nonce := cipherkit.Nonce(sealed[:cipherkit.GCMNonceSize])
+	encrypted := cipherkit.Ciphertext(sealed[cipherkit.GCMNonceSize:])
+	return nonce, encrypted, nil
 }

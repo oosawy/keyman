@@ -6,6 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/oosawy/keyman/internal/cipherkit"
 )
 
 func flagNew(name string) *flag.FlagSet {
@@ -21,7 +23,7 @@ func flagNew(name string) *flag.FlagSet {
 	return fs
 }
 
-func generateAESKey() ([]byte, error) {
+func generateAESKey() (cipherkit.MasterKey, error) {
 	key := make([]byte, 32)
 	_, err := rand.Read(key)
 	if err != nil {

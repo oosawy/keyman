@@ -19,19 +19,19 @@ func runKeygen(args []string) {
 		return
 	}
 
-	priv, pub, fp, err := keypair.EncodeP256KeyPair(key)
+	encoded, err := keypair.EncodeP256KeyPair(key)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "key encoding failed: %v\n", err)
 		return
 	}
 
-	sealed, err := seal.SealPrivateKey(priv, globalAesKey)
+	sealed, err := seal.SealPrivateKey(encoded.PrivateKey, globalAesKey)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "seal failed: %v\n", err)
 		return
 	}
 
 	fmt.Printf("secret key : %x\n", sealed)
-	fmt.Printf("public key : %x\n", pub)
-	fmt.Printf("fingerprint: %x\n", fp)
+	fmt.Printf("public key : %x\n", encoded.PublicKey)
+	fmt.Printf("fingerprint: %x\n", encoded.Fingerprint)
 }

@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/oosawy/keyman/internal/cipherkit"
 )
 
-var globalAesKey []byte
+var globalAesKey cipherkit.MasterKey
 
 func main() {
 	fmt.Println("keyman-repl: Type `help` to see available commands")

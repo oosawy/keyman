@@ -33,12 +33,12 @@ func runDerive(args []string) {
 		return
 	}
 
-	_, pub, fp, err := keypair.EncodeP256KeyPair(priv)
+	encoded, err := keypair.EncodeP256KeyPair(priv)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "key encoding failed: %v\n", err)
 		return
 	}
 
-	fmt.Printf("public     : %x\n", pub)
-	fmt.Printf("fingerprint: %x\n", fp)
+	fmt.Printf("public     : %x\n", encoded.PublicKey)
+	fmt.Printf("fingerprint: %x\n", encoded.Fingerprint)
 }
