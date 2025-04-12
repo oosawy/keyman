@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/oosawy/keyman/internal/keypair"
-	"github.com/oosawy/keyman/internal/seal"
+	"github.com/oosawy/keyman/pkg/derive"
 )
 
 // derive --secret SECRET_KEY_HEX
@@ -21,24 +20,15 @@ func runDerive(args []string) {
 
 	secBytes := mustDecodeHex("secret", *secret)
 
-	unsealed, err := seal.UnsealPrivateKey(secBytes, globalAesKey)
+	info, err := derive.DerivePublicKey(derive.DeriveOptions{
+		SealedPrivateKey: secBytes,
+		MasterKey:        globalAesKey,
+	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "unseal failed: %v\n", err)
-		return
+		fmt.Fprintf(os.Stderr, "derive failed: %v\n", err)
+		os.Exit(1)
 	}
 
-	priv, err := keypair.DecodeP256PrivateKey(unsealed)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "key decoding failed: %v\n", err)
-		return
-	}
-
-	encoded, err := keypair.EncodeP256KeyPair(priv)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "key encoding failed: %v\n", err)
-		return
-	}
-
-	fmt.Printf("public     : %x\n", encoded.PublicKey)
-	fmt.Printf("fingerprint: %x\n", encoded.Fingerprint)
+	fmt.Printf("public     : %x\n", info.PublicKey)
+	fmt.Printf("fingerprint: %x\n", info.Fingerprint)
 }

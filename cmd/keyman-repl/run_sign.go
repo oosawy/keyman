@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/oosawy/keyman/internal/keypair"
-	"github.com/oosawy/keyman/internal/seal"
+	"github.com/oosawy/keyman/pkg/sign"
 )
 
 // sign --secret SECRET_KEY_HEX --message MESSAGE
@@ -23,22 +22,14 @@ func runSign(args []string) {
 	secBytes := mustDecodeHex("secret", *secret)
 	msgBytes := []byte(*message)
 
-	unsealed, err := seal.UnsealPrivateKey(secBytes, globalAesKey)
+	sig, err := sign.SignMessage(sign.SignOptions{
+		SealedPrivateKey: secBytes,
+		MasterKey:        globalAesKey,
+		Message:          msgBytes,
+	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "unseal failed: %v\n", err)
-		return
-	}
-
-	priv, err := keypair.DecodeP256PrivateKey(unsealed)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "key decoding failed: %v\n", err)
-		return
-	}
-
-	sig, err := keypair.Sign(priv, msgBytes)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "")
-		return
+		fmt.Fprintf(os.Stderr, "signing failed: %v\n", err)
+		os.Exit(1)
 	}
 
 	fmt.Printf("signature: %x\n", sig)
