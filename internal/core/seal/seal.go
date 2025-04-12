@@ -3,8 +3,8 @@ package seal
 import (
 	"errors"
 
-	"github.com/oosawy/keyman/internal/cipherkit"
-	"github.com/oosawy/keyman/internal/keypair"
+	"github.com/oosawy/keyman/internal/core/cipherkit"
+	"github.com/oosawy/keyman/internal/core/keypair"
 )
 
 func SealPrivateKey(priv keypair.EncodedPrivateKey, mkey cipherkit.MasterKey) (SealedPrivateKey, error) {

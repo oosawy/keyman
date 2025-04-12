@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/oosawy/keyman/internal/cipherkit"
+	"github.com/oosawy/keyman/internal/core/cipherkit"
 )
 
 var globalAesKey cipherkit.MasterKey

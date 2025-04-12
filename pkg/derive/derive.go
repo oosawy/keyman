@@ -3,8 +3,8 @@ package derive
 import (
 	"fmt"
 
-	"github.com/oosawy/keyman/internal/keypair"
-	"github.com/oosawy/keyman/internal/seal"
+	"github.com/oosawy/keyman/internal/core/keypair"
+	"github.com/oosawy/keyman/internal/core/seal"
 )
 
 type DeriveOptions struct {

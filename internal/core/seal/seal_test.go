@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/oosawy/keyman/internal/cipherkit"
-	"github.com/oosawy/keyman/internal/keypair"
-	"github.com/oosawy/keyman/internal/seal"
+	"github.com/oosawy/keyman/internal/core/cipherkit"
+	"github.com/oosawy/keyman/internal/core/keypair"
+	"github.com/oosawy/keyman/internal/core/seal"
 )
 
 func TestSealAndUnsealPrivateKey(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/oosawy/keyman/internal/keypair"
-	"github.com/oosawy/keyman/internal/seal"
+	"github.com/oosawy/keyman/internal/core/keypair"
+	"github.com/oosawy/keyman/internal/core/seal"
 )
 
 // fingerprint [--public PUBLIC_KEY_HEX] | [--secret SECRET_KEY_HEX]

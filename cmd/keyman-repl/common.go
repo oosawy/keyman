@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/oosawy/keyman/internal/cipherkit"
+	"github.com/oosawy/keyman/internal/core/cipherkit"
 )
 
 func flagNew(name string) *flag.FlagSet {

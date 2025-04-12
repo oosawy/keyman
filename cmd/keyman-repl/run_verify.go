@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/oosawy/keyman/internal/keypair"
+	"github.com/oosawy/keyman/internal/core/keypair"
 )
 
 // verify --public PUBLIC_KEY_HEX --message MESSAGE --signature HEX
